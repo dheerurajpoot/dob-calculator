@@ -58,15 +58,46 @@ export function AgeCalculator() {
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={birthDate}
-              onSelect={setBirthDate}
-              initialFocus
-              disabled={(date) => date > today}
-              fromYear={1900}
-              toYear={today.getFullYear()}
-            />
+            <div className="flex flex-col space-y-4 p-4">
+              <select
+                className="w-full rounded-md border border-input bg-background px-3 py-2"
+                value={birthDate ? birthDate.getFullYear() : today.getFullYear()}
+                onChange={(e) => {
+                  const year = parseInt(e.target.value)
+                  if (birthDate) {
+                    const newDate = new Date(birthDate)
+                    newDate.setFullYear(year)
+                    if (newDate > today) {
+                      newDate.setMonth(today.getMonth())
+                      newDate.setDate(today.getDate())
+                    }
+                    setBirthDate(newDate)
+                  } else {
+                    const newDate = new Date()
+                    newDate.setFullYear(year)
+                    setBirthDate(newDate)
+                  }
+                }}
+              >
+                {Array.from(
+                  { length: today.getFullYear() - 1900 + 1 },
+                  (_, i) => today.getFullYear() - i
+                ).map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+              <Calendar
+                mode="single"
+                selected={birthDate}
+                onSelect={setBirthDate}
+                initialFocus
+                disabled={(date) => date > today}
+                fromYear={1900}
+                toYear={today.getFullYear()}
+              />
+            </div>
           </PopoverContent>
         </Popover>
       </div>

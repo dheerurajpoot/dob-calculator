@@ -59,7 +59,34 @@ export function DateDifferenceCalculator() {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+              <div className="flex flex-col space-y-4 p-4">
+                <select
+                  className="w-full rounded-md border border-input bg-background px-3 py-2"
+                  value={startDate ? startDate.getFullYear() : new Date().getFullYear()}
+                  onChange={(e) => {
+                    const year = parseInt(e.target.value)
+                    if (startDate) {
+                      const newDate = new Date(startDate)
+                      newDate.setFullYear(year)
+                      setStartDate(newDate)
+                    } else {
+                      const newDate = new Date()
+                      newDate.setFullYear(year)
+                      setStartDate(newDate)
+                    }
+                  }}
+                >
+                  {Array.from(
+                    { length: 200 }, // Show 200 years in the past from current year
+                    (_, i) => new Date().getFullYear() - i
+                  ).map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+                <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+              </div>
             </PopoverContent>
           </Popover>
         </div>
@@ -77,13 +104,43 @@ export function DateDifferenceCalculator() {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={endDate}
-                onSelect={setEndDate}
-                initialFocus
-                disabled={(date) => date < (startDate || new Date())}
-              />
+              <div className="flex flex-col space-y-4 p-4">
+                <select
+                  className="w-full rounded-md border border-input bg-background px-3 py-2"
+                  value={endDate ? endDate.getFullYear() : new Date().getFullYear()}
+                  onChange={(e) => {
+                    const year = parseInt(e.target.value)
+                    if (endDate) {
+                      const newDate = new Date(endDate)
+                      newDate.setFullYear(year)
+                      if (startDate && newDate < startDate) {
+                        newDate.setTime(startDate.getTime())
+                      }
+                      setEndDate(newDate)
+                    } else {
+                      const newDate = new Date()
+                      newDate.setFullYear(year)
+                      setEndDate(newDate)
+                    }
+                  }}
+                >
+                  {Array.from(
+                    { length: 200 }, // Show 200 years in the past from current year
+                    (_, i) => new Date().getFullYear() - i
+                  ).map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={setEndDate}
+                  initialFocus
+                  disabled={(date) => date < (startDate || new Date())}
+                />
+              </div>
             </PopoverContent>
           </Popover>
         </div>
